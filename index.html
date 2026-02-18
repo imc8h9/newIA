@@ -2,551 +2,195 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>محرك الجينوم المهاري المتكيّف</title>
+  <title>محرك الجينوم المهاري المتكيّف — MVP Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    :root {
-      --bg-primary: #0A0F1C;
-      --bg-secondary: #0F1624;
-      --bg-card: rgba(20, 28, 45, 0.7);
-      --bg-card-hover: rgba(30, 40, 60, 0.85);
-
-      --neon-blue: #00E0FF;
-      --neon-purple: #AA00FF;
-      --neon-cyan: #00FFF0;
-      --neon-pink: #FF006E;
-
-      --text-primary: #FFFFFF;
-      --text-secondary: #B4C7E7;
-      --text-muted: #7A8BA3;
-
-      --btn-primary-bg: linear-gradient(135deg, #00E0FF 0%, #AA00FF 100%);
-      --btn-primary-glow: 0 0 20px rgba(0, 224, 255, 0.6);
-
-      --btn-secondary-bg: transparent;
-      --btn-secondary-border: #00E0FF;
-
-      --grid-line: rgba(0, 224, 255, 0.1);
+    :root{
+      --bg-primary:#0A0F1C;--bg-secondary:#0F1624;--bg-card:rgba(20,28,45,.7);--bg-card-hover:rgba(30,40,60,.85);
+      --neon-blue:#00E0FF;--neon-purple:#AA00FF;--neon-cyan:#00FFF0;--neon-pink:#FF006E;
+      --text-primary:#fff;--text-secondary:#B4C7E7;--text-muted:#7A8BA3;
+      --btn-primary-bg:linear-gradient(135deg,#00E0FF 0%,#AA00FF 100%);--btn-primary-glow:0 0 20px rgba(0,224,255,.6);
+      --btn-secondary-bg:transparent;--btn-secondary-border:#00E0FF;--grid-line:rgba(0,224,255,.1);
     }
+    *{box-sizing:border-box}
+    body{
+      margin:0;padding:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top,#151b30 0%,#050814 60%,#02030a 100%);
+      color:var(--text-primary);direction:rtl;
+    }
+    a{color:inherit;text-decoration:none}
+    button{font-family:inherit;cursor:pointer}
+    .app{
+      min-height:100vh;position:relative;overflow-x:hidden;
+      background-image:linear-gradient(90deg,var(--grid-line) 1px,transparent 1px),
+                       linear-gradient(180deg,var(--grid-line) 1px,transparent 1px);
+      background-size:80px 80px;
+    }
+    .neon-orb{position:fixed;width:260px;height:260px;border-radius:50%;filter:blur(60px);opacity:.35;pointer-events:none;z-index:0;animation:floatOrb 26s ease-in-out infinite alternate}
+    .orb-1{background:var(--neon-blue);top:-60px;right:10%;animation-duration:28s}
+    .orb-2{background:var(--neon-purple);bottom:-80px;left:5%;animation-duration:24s}
+    .orb-3{background:var(--neon-cyan);top:40%;left:40%;animation-duration:32s}
+    .neon-orb.neon-paused{animation-play-state:paused;opacity:.18}
+    @keyframes floatOrb{0%{transform:translate3d(0,0,0) scale(1);opacity:.28}50%{transform:translate3d(20px,-20px,0) scale(1.05);opacity:.4}100%{transform:translate3d(-25px,25px,0) scale(.95);opacity:.3}}
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #151b30 0%, #050814 60%, #02030a 100%);
-      color: var(--text-primary);
-      direction: rtl;
+    header{
+      position:sticky;top:0;z-index:10;backdrop-filter:blur(18px);
+      background:linear-gradient(to bottom,rgba(5,8,20,.95),rgba(5,8,20,.7));
+      border-bottom:1px solid var(--grid-line);
     }
-    a { color: inherit; text-decoration: none; }
-    button { font-family: inherit; cursor: pointer; }
-
-    .app {
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-      background-image:
-        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
-        linear-gradient(180deg, var(--grid-line) 1px, transparent 1px);
-      background-size: 80px 80px;
+    .nav{
+      max-width:1200px;margin:0 auto;padding:.75rem 1.5rem;
+      display:flex;align-items:center;justify-content:space-between;gap:1.5rem
     }
-
-    .neon-orb {
-      position: fixed;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.35;
-      pointer-events: none;
-      z-index: 0;
-      animation: floatOrb 26s ease-in-out infinite alternate;
+    .brand{display:flex;align-items:center;gap:.6rem}
+    .logo{
+      width:32px;height:32px;border-radius:10px;border:1px solid var(--neon-blue);
+      box-shadow:0 0 12px rgba(0,224,255,.4);
+      display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--neon-cyan)
     }
-    .orb-1 { background: var(--neon-blue); top: -60px; right: 10%; animation-duration: 28s; }
-    .orb-2 { background: var(--neon-purple); bottom: -80px; left: 5%; animation-duration: 24s; }
-    .orb-3 { background: var(--neon-cyan); top: 40%; left: 40%; animation-duration: 32s; }
-    .neon-orb.neon-paused { animation-play-state: paused; opacity: 0.18; }
-
-    @keyframes floatOrb {
-      0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.28; }
-      50% { transform: translate3d(20px, -20px, 0) scale(1.05); opacity: 0.4; }
-      100% { transform: translate3d(-25px, 25px, 0) scale(0.95); opacity: 0.3; }
+    .brand-text{display:flex;flex-direction:column;font-size:.85rem}
+    .brand-text span:first-child{font-weight:600}
+    .nav-links{display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .nav-links button{
+      background:transparent;border:none;color:var(--text-secondary);
+      padding:.3rem .6rem;border-radius:999px;transition:.2s;font-size:.9rem
     }
-    @keyframes rotate { to { transform: rotate(360deg); } }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      backdrop-filter: blur(18px);
-      background: linear-gradient(to bottom, rgba(5, 8, 20, 0.95), rgba(5, 8, 20, 0.7));
-      border-bottom: 1px solid var(--grid-line);
+    .nav-links button:hover{color:var(--neon-blue)}
+    .nav-links .primary-nav-btn{
+      background:var(--btn-primary-bg);color:#fff;padding:.4rem 1rem;
+      box-shadow:var(--btn-primary-glow);border-radius:999px;border:none;font-size:.9rem
     }
-    .nav {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0.75rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-    }
-    .brand { display: flex; align-items: center; gap: 0.6rem; }
-    .logo {
-      width: 32px; height: 32px; border-radius: 10px;
-      border: 1px solid var(--neon-blue);
-      box-shadow: 0 0 12px rgba(0, 224, 255, 0.4);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; color: var(--neon-cyan);
-    }
-    .brand-text { display: flex; flex-direction: column; font-size: 0.85rem; }
-    .brand-text span:first-child { font-weight: 600; }
-
-    .nav-links {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      font-size: 0.9rem;
-      flex-wrap: wrap;
-    }
-    .nav-links button {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      padding: 0.3rem 0.6rem;
-      border-radius: 999px;
-      transition: 0.2s;
-      font-size: 0.9rem;
-    }
-    .nav-links button:hover { color: var(--neon-blue); }
-
-    .nav-links .primary-nav-btn {
-      background: var(--btn-primary-bg);
-      color: #fff;
-      padding: 0.4rem 1rem;
-      box-shadow: var(--btn-primary-glow);
-      border-radius: 999px;
-      border: none;
-      font-size: 0.9rem;
-    }
-    .nav-links .secondary-nav-btn {
-      border: 1px solid var(--btn-secondary-border);
-      padding: 0.4rem 1rem;
-      border-radius: 999px;
-      background: var(--btn-secondary-bg);
-      color: var(--neon-blue);
+    .nav-links .secondary-nav-btn{
+      border:1px solid var(--btn-secondary-border);
+      padding:.4rem 1rem;border-radius:999px;background:transparent;color:var(--neon-blue)
     }
     .nav-links .danger-nav-btn{
-      border: 1px solid rgba(255,0,110,0.65);
-      color: #FF8AC2;
-      padding: 0.4rem 1rem;
-      border-radius: 999px;
-      background: rgba(255,0,110,0.08);
+      border:1px solid rgba(255,0,110,.65);color:#FF8AC2;
+      padding:.4rem 1rem;border-radius:999px;background:rgba(255,0,110,.08)
     }
 
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1.5rem;
-      position: relative;
-      z-index: 1;
-    }
-    section {
-      display: none;
-      padding: 2rem 0 4rem;
-      min-height: calc(100vh - 80px);
-    }
-    section.active-section { display: block; }
+    main{max-width:1200px;margin:0 auto;padding:1.5rem;position:relative;z-index:1}
+    section{display:none;padding:2rem 0 4rem;min-height:calc(100vh - 80px)}
+    section.active-section{display:block}
 
-    .section-header { margin-bottom: 1.5rem; }
-    .section-header h2 { margin: 0 0 0.5rem; font-size: 1.6rem; }
-    .section-header p { margin: 0; color: var(--text-secondary); font-size: 0.9rem; }
+    .section-header{margin-bottom:1.2rem}
+    .section-header h2{margin:0 0 .5rem;font-size:1.6rem}
+    .section-header p{margin:0;color:var(--text-secondary);font-size:.9rem}
 
-    .btn-small {
-      padding: 0.5rem 1.2rem;
-      font-size: 0.85rem;
-      border-radius: 999px;
-      border: none;
-      background: var(--btn-primary-bg);
-      color: #fff;
-      box-shadow: var(--btn-primary-glow);
+    .btn-primary{
+      background:var(--btn-primary-bg);color:#fff;border-radius:999px;padding:.7rem 1.6rem;border:none;
+      box-shadow:var(--btn-primary-glow);font-size:.95rem;font-weight:700;position:relative;overflow:hidden
     }
-    .btn-outline {
-      background: transparent;
-      border-radius: 999px;
-      border: 1px solid var(--btn-secondary-border);
-      color: var(--neon-blue);
-      padding: 0.5rem 1.2rem;
-      font-size: 0.85rem;
+    .btn-secondary{
+      background:transparent;color:var(--neon-blue);border-radius:999px;padding:.7rem 1.6rem;border:1px solid var(--btn-secondary-border);
+      font-size:.95rem;font-weight:600
     }
-    .btn-ghost {
-      background: transparent;
-      border-radius: 999px;
-      border: 1px dashed rgba(0, 224, 255, 0.4);
-      color: var(--text-secondary);
-      padding: 0.45rem 1rem;
-      font-size: 0.8rem;
-    }
+    .btn-small{padding:.5rem 1.2rem;font-size:.85rem;border-radius:999px;border:none;background:var(--btn-primary-bg);color:#fff;box-shadow:var(--btn-primary-glow)}
+    .btn-outline{background:transparent;border-radius:999px;border:1px solid var(--btn-secondary-border);color:var(--neon-blue);padding:.5rem 1.2rem;font-size:.85rem}
+    .btn-ghost{background:transparent;border-radius:999px;border:1px dashed rgba(0,224,255,.4);color:var(--text-secondary);padding:.45rem 1rem;font-size:.85rem}
 
-    /* ===== Landing ===== */
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2.5fr);
-      gap: 2rem;
-      align-items: center;
-      margin-top: 2rem;
+    .card{
+      background:rgba(15,22,36,.92);border:1px solid rgba(0,224,255,.25);border-radius:18px;
+      box-shadow:0 0 18px rgba(0,0,0,.55);padding:1.2rem 1.4rem
     }
-    @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; text-align: center; }
-    }
-    .hero-text h1 {
-      font-size: clamp(2.2rem, 4vw, 2.8rem);
-      line-height: 1.4;
-      margin: 0 0 1rem;
-    }
-    .hero-highlight {
-      background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-    .hero-subtitle {
-      color: var(--text-secondary);
-      font-size: 0.98rem;
-      line-height: 1.8;
-      max-width: 34rem;
-    }
-    @media (max-width: 900px) { .hero-subtitle { margin: 0 auto; } }
-    .hero-actions { margin-top: 1.6rem; display: flex; gap: 1rem; flex-wrap: wrap; }
-    @media (max-width: 900px) { .hero-actions { justify-content: center; } }
-    .btn-primary {
-      background: var(--btn-primary-bg);
-      color: #fff;
-      border-radius: 999px;
-      padding: 0.7rem 1.6rem;
-      border: none;
-      box-shadow: var(--btn-primary-glow);
-      font-size: 0.95rem;
-      font-weight: 600;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-secondary {
-      background: var(--btn-secondary-bg);
-      color: var(--neon-blue);
-      border-radius: 999px;
-      padding: 0.7rem 1.6rem;
-      border: 1px solid var(--btn-secondary-border);
-      font-size: 0.95rem;
-      font-weight: 500;
-    }
-    .hero-visual {
-      position: relative;
-      padding: 1.5rem;
-      border-radius: 24px;
-      background: radial-gradient(circle at top, rgba(0, 224, 255, 0.25), rgba(10, 15, 28, 0.95));
-      box-shadow: 0 0 26px rgba(0, 224, 255, 0.25);
-      overflow: hidden;
-    }
-    .hero-brain {
-      width: 120px; height: 120px; border-radius: 40px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      position: relative;
-      margin: 0 auto 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .hero-brain::before,
-    .hero-brain::after {
-      content: "";
-      position: absolute;
-      border-radius: 999px;
-      border: 1px dashed rgba(0, 224, 255, 0.6);
-      inset: 10px;
-      animation: rotate 14s linear infinite;
-    }
-    .hero-brain::after {
-      inset: 22px;
-      border-color: rgba(170, 0, 255, 0.6);
-      animation-direction: reverse;
-    }
-    .hero-brain-icon {
-      font-size: 2.4rem;
-      color: var(--neon-cyan);
-      text-shadow: 0 0 12px rgba(0, 255, 240, 0.9);
-    }
-    .hero-hints { margin-top: 1.2rem; font-size: 0.8rem; color: var(--text-muted); }
-    .hero-hints strong { color: var(--neon-purple); }
-
-    /* ===== Cards ===== */
-    .demo-card{
-      max-width: 900px;
-      margin: 0 auto 1.2rem;
-      padding: 1.2rem 1.4rem;
-      border-radius: 18px;
-      background: rgba(15, 22, 36, 0.92);
-      border: 1px solid rgba(0,224,255,0.25);
-      box-shadow: 0 0 18px rgba(0,0,0,0.55);
-    }
-    .demo-card h3{ margin:0 0 0.6rem; font-size:1.05rem; }
-    .demo-meta{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.7rem 1rem;
-      font-size:0.86rem;
-      color: var(--text-secondary);
-    }
-    @media(max-width:800px){ .demo-meta{ grid-template-columns:1fr; } }
-    .demo-meta strong{ color: var(--neon-cyan); font-weight:700; }
-    .demo-pill{
-      display:inline-flex; align-items:center; gap:0.35rem;
-      border-radius:999px;
-      padding:0.25rem 0.7rem;
-      border:1px solid rgba(0,224,255,0.28);
-      background: rgba(0,224,255,0.08);
-      font-size:0.78rem;
-      color: var(--text-secondary);
-      margin-top: 0.6rem;
-    }
-    .demo-table-wrap{
-      margin-top: 0.9rem;
-      border-radius: 14px;
-      overflow:auto;
-      border: 1px solid rgba(0,224,255,0.18);
-    }
-    .demo-table{
-      width:100%;
-      border-collapse: collapse;
-      min-width: 720px;
-      background: rgba(10,16,28,0.6);
-    }
-    .demo-table th,.demo-table td{
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(0,224,255,0.10);
-      text-align:right;
-      font-size:0.84rem;
-      color: var(--text-secondary);
-      white-space: nowrap;
-    }
-    .demo-table th{ color:#DCE8FF; font-weight:700; }
-    .demo-badge-ok{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding: 0.15rem 0.55rem;
-      border-radius: 999px;
-      border: 1px solid rgba(0,255,136,0.55);
-      background: rgba(0,255,136,0.10);
-      color:#8BFFC4;
-      font-size:0.75rem;
-    }
-    .demo-badge-gap{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding: 0.15rem 0.55rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255,0,110,0.55);
-      background: rgba(255,0,110,0.10);
-      color:#FF8AC2;
-      font-size:0.75rem;
-    }
-
-    /* ===== Login ===== */
-    .auth-wrap{
-      max-width: 720px;
-      margin: 0 auto;
-      background: rgba(15, 22, 36, 0.92);
-      border: 1px solid rgba(0,224,255,0.25);
-      border-radius: 18px;
-      box-shadow: 0 0 18px rgba(0,0,0,0.55);
-      padding: 1.4rem 1.6rem;
-    }
-    .auth-grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 0.9rem;
-    }
-    @media (max-width:800px){ .auth-grid{ grid-template-columns:1fr; } }
-    .form-group { display:flex; flex-direction:column; gap:0.25rem; font-size:0.85rem; }
-    label { color: var(--text-secondary); }
-    input, select, textarea {
-      padding: 0.6rem 0.7rem;
-      border-radius: 10px;
-      border: 1px solid rgba(0, 224, 255, 0.35);
-      background: rgba(15, 22, 36, 0.8);
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 0.86rem;
-      outline: none;
-      transition: 0.2s;
-    }
-    input:focus {
-      border-color: var(--neon-blue);
-      box-shadow: 0 0 14px rgba(0, 224, 255, 0.5);
-    }
-    .auth-actions{ display:flex; gap:0.6rem; flex-wrap:wrap; justify-content:flex-end; margin-top: 0.9rem; }
-    .auth-note{ font-size:0.8rem; color: var(--text-muted); margin-top: 0.6rem; line-height:1.6; }
-    .auth-error{ color:#FF8AC2; font-size:0.85rem; margin-top:0.6rem; font-weight:600; }
+    .grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:1rem}
+    @media(max-width:900px){.grid-2{grid-template-columns:1fr}}
 
     .gate-toast{
-      margin: 0 auto 1rem;
-      max-width: 900px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,0,110,0.45);
-      background: rgba(255,0,110,0.08);
-      color: #FFB3D5;
-      padding: 0.7rem 0.9rem;
-      font-size: 0.85rem;
-      display:none;
+      margin:0 auto 1rem;max-width:1200px;border-radius:14px;border:1px solid rgba(255,0,110,.45);
+      background:rgba(255,0,110,.08);color:#FFB3D5;padding:.7rem .9rem;font-size:.85rem;display:none
     }
-    .gate-toast strong{ color:#FFD1E6; }
+    .gate-toast strong{color:#FFD1E6}
 
-    /* ===== Dashboard ===== */
-    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 1.5rem; }
-    @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
-    .dashboard-main,
-    .dashboard-side {
-      background: rgba(15, 22, 36, 0.95);
-      border-radius: 20px;
-      padding: 1.4rem 1.6rem;
-      border: 1px solid rgba(0, 224, 255, 0.25);
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.55);
+    /* Login */
+    .auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.8rem}
+    @media(max-width:800px){.auth-grid{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:.25rem;font-size:.85rem}
+    label{color:var(--text-secondary)}
+    input{
+      padding:.6rem .7rem;border-radius:10px;border:1px solid rgba(0,224,255,.35);
+      background:rgba(15,22,36,.8);color:var(--text-primary);outline:none;transition:.2s
     }
-    .dashboard-main { position: relative; overflow: hidden; }
-    .dashboard-main::after {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background: radial-gradient(circle at top, rgba(0, 224, 255, 0.16), transparent 60%);
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    .dashboard-main-inner { position: relative; z-index: 1; }
-    #skillsRadar { display: block; max-width: 100%; margin: 0 auto; }
+    input:focus{border-color:var(--neon-blue);box-shadow:0 0 14px rgba(0,224,255,.5)}
+    .auth-actions{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:flex-end;margin-top:.9rem}
+    .auth-note{font-size:.8rem;color:var(--text-muted);margin-top:.6rem;line-height:1.6}
+    .auth-error{color:#FF8AC2;font-size:.85rem;margin-top:.6rem;font-weight:700}
 
-    .dashboard-readiness {
-      margin-top: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      font-size: 0.88rem;
+    /* Home */
+    .home-hero{
+      display:grid;grid-template-columns:1.5fr 1fr;gap:1rem;align-items:stretch
     }
-    .readiness-circle {
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      border: 2px solid rgba(0, 224, 255, 0.6);
-      box-shadow: 0 0 18px rgba(0, 224, 255, 0.6);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at top, rgba(0, 224, 255, 0.3), rgba(4, 12, 24, 0.95));
-      position: relative;
-      overflow: hidden;
+    @media(max-width:900px){.home-hero{grid-template-columns:1fr}}
+    .home-title{font-size:1.7rem;margin:0 0 .5rem}
+    .home-sub{margin:0;color:var(--text-secondary);line-height:1.8;font-size:.92rem}
+    .home-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem}
+    .kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem}
+    @media(max-width:900px){.kpi-row{grid-template-columns:1fr}}
+    .kpi{
+      border-radius:16px;border:1px solid rgba(0,224,255,.18);background:rgba(10,16,28,.78);
+      padding:.85rem .95rem
     }
-    .readiness-circle::before {
-      content: "";
-      position: absolute;
-      inset: 12px;
-      border-radius: 50%;
-      border: 1px dashed rgba(0, 224, 255, 0.5);
-      animation: rotate 12s linear infinite;
-    }
-    .readiness-value { font-size: 1.4rem; font-weight: 700; color: var(--neon-cyan); z-index: 1; }
-    .readiness-label { font-size: 0.7rem; color: var(--text-secondary); z-index: 1; }
+    .kpi .v{font-size:1.2rem;font-weight:900;color:var(--neon-cyan)}
+    .kpi .l{font-size:.8rem;color:var(--text-secondary);margin-top:.15rem}
 
-    .skills-list, .gaps-list { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; }
-    .skills-list li, .gaps-list li {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.35rem 0.3rem;
-      border-bottom: 1px dashed rgba(0, 224, 255, 0.12);
+    /* Demo employee */
+    .demo-meta{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1rem;font-size:.86rem;color:var(--text-secondary)}
+    @media(max-width:800px){.demo-meta{grid-template-columns:1fr}}
+    .demo-meta strong{color:var(--neon-cyan);font-weight:800}
+    .pill{
+      display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.25rem .7rem;
+      border:1px solid rgba(0,224,255,.28);background:rgba(0,224,255,.08);font-size:.78rem;color:var(--text-secondary);margin-top:.6rem
     }
-    .skills-list li:last-child, .gaps-list li:last-child { border-bottom: none; }
-    .skill-badge-label { display: inline-flex; align-items: center; gap: 0.35rem; }
-    .skill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--neon-blue); box-shadow: 0 0 8px rgba(0, 224, 255, 0.8); }
-    .skill-score { color: var(--neon-cyan); font-weight: 600; font-size: 0.8rem; }
-    .gap-tag {
-      font-size: 0.75rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 999px;
-      background: rgba(255, 0, 110, 0.12);
-      border: 1px solid rgba(255, 0, 110, 0.6);
-      color: #FF8AC2;
-    }
-    .dashboard-note { margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); }
 
-    /* ===== Pathway ===== */
-    .lp-grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 0.8rem;
-      margin-top: 0.9rem;
-    }
-    @media(max-width:900px){ .lp-grid{ grid-template-columns:1fr; } }
-    .lp-stage{
-      border-radius: 14px;
-      border:1px solid rgba(0,224,255,0.18);
-      background: rgba(10,16,28,0.75);
-      padding: 0.85rem 0.95rem;
-    }
-    .lp-stage-title{ font-weight:800; color:#DCE8FF; margin-bottom:0.35rem; }
-    .lp-item{
-      display:flex; justify-content:space-between; gap:0.6rem;
-      border-top: 1px dashed rgba(0,224,255,0.14);
-      padding-top:0.55rem; margin-top:0.55rem;
-      font-size:0.82rem; color: var(--text-secondary);
-    }
-    .lp-item a{ color: var(--neon-blue); font-weight:700; }
+    /* Table */
+    .table-wrap{margin-top:.9rem;border-radius:14px;overflow:auto;border:1px solid rgba(0,224,255,.18)}
+    table{width:100%;border-collapse:collapse;min-width:820px;background:rgba(10,16,28,.6)}
+    th,td{padding:10px 12px;border-bottom:1px solid rgba(0,224,255,.10);text-align:right;font-size:.84rem;color:var(--text-secondary);white-space:nowrap}
+    th{color:#DCE8FF;font-weight:800}
 
-    /* ===== Assessment (kept, but locked after login) ===== */
-    .assessment-demo {
-      margin-top: 1.5rem;
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    /* Dashboard */
+    .dashboard-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:1.2rem}
+    @media(max-width:900px){.dashboard-grid{grid-template-columns:1fr}}
+    .dash-main,.dash-side{background:rgba(15,22,36,.95);border-radius:20px;padding:1.2rem 1.4rem;border:1px solid rgba(0,224,255,.25);box-shadow:0 0 20px rgba(0,0,0,.55)}
+    #skillsRadar{display:block;max-width:100%;margin:0 auto}
+    .readiness{margin-top:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+    .circle{
+      width:80px;height:80px;border-radius:50%;border:2px solid rgba(0,224,255,.6);
+      box-shadow:0 0 18px rgba(0,224,255,.6);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:radial-gradient(circle at top,rgba(0,224,255,.3),rgba(4,12,24,.95));position:relative;overflow:hidden
     }
-    @media (max-width: 900px) { .assessment-demo { grid-template-columns: 1fr; } }
-    .assessment-card, .assessment-summary {
-      background: rgba(15, 22, 36, 0.95);
-      border-radius: 18px;
-      padding: 1.2rem 1.4rem;
-      border: 1px solid rgba(0, 224, 255, 0.25);
-      box-shadow: 0 0 18px rgba(0, 0, 0, 0.5);
-      font-size: 0.88rem;
-    }
-    .skill-slider { margin-bottom: 0.8rem; }
-    .skill-slider label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem; font-size: 0.85rem; }
-    .skill-slider span.value { color: var(--neon-cyan); font-weight: 600; font-size: 0.8rem; }
-    .skill-slider input[type="range"] { width: 100%; accent-color: var(--neon-blue); }
-    .summary-pill{
-      display:flex; justify-content:space-between; align-items:center;
-      padding:0.4rem 0.6rem;
-      border-radius:999px;
-      border:1px solid rgba(0,224,255,0.3);
-      margin-bottom:0.4rem;
-      font-size:0.8rem;
-    }
-    .summary-pill span.score { color: var(--neon-cyan); font-weight: 600; }
-    .badge-status{
-      display:inline-flex; align-items:center; gap:0.25rem;
-      padding:0.25rem 0.6rem;
-      border-radius:999px;
-      background: rgba(0,255,136,0.12);
-      border:1px solid rgba(0,255,136,0.6);
-      color:#8BFFC4;
-      font-size:0.75rem;
-    }
-    .assessment-hint{ font-size:0.78rem; color: var(--text-muted); margin-top:0.4rem; }
+    .circle:before{content:"";position:absolute;inset:12px;border-radius:50%;border:1px dashed rgba(0,224,255,.5);animation:rotate 12s linear infinite}
+    @keyframes rotate{to{transform:rotate(360deg)}}
+    .circle .v{font-size:1.4rem;font-weight:900;color:var(--neon-cyan);z-index:1}
+    .circle .t{font-size:.7rem;color:var(--text-secondary);z-index:1}
 
-    /* ===== Simple placeholder ===== */
-    .placeholder-box {
-      border-radius: 18px;
-      padding: 1.5rem;
-      background: rgba(15, 22, 36, 0.9);
-      border: 1px dashed rgba(0, 224, 255, 0.4);
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      line-height: 1.7;
+    .list{list-style:none;padding:0;margin:0;font-size:.85rem}
+    .list li{display:flex;justify-content:space-between;align-items:center;padding:.35rem .3rem;border-bottom:1px dashed rgba(0,224,255,.12)}
+    .list li:last-child{border-bottom:none}
+    .tag{
+      font-size:.75rem;padding:.15rem .55rem;border-radius:999px;background:rgba(255,0,110,.12);border:1px solid rgba(255,0,110,.6);color:#FF8AC2
     }
+
+    /* Market cards */
+    .market-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:1rem}
+    @media(max-width:900px){.market-layout{grid-template-columns:1fr}}
+    .market-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.8rem;margin-top:.7rem}
+    .market-card{
+      border-radius:14px;padding:.75rem .85rem;background:rgba(10,16,28,.95);
+      border:1px solid rgba(0,224,255,.18);position:relative;overflow:hidden
+    }
+    .market-card-title{font-size:.9rem;margin-bottom:.15rem}
+    .market-card-meta{font-size:.75rem;color:var(--text-muted);margin-bottom:.45rem}
+    .market-tag-row{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.35rem}
+    .market-tag{font-size:.7rem;padding:.15rem .45rem;border-radius:999px;border:1px solid rgba(0,224,255,.35);color:var(--text-secondary)}
+    .basket{list-style:none;padding:0;margin:.5rem 0 0;font-size:.84rem}
+    .basket li{display:flex;justify-content:space-between;align-items:center;padding:.3rem .2rem;border-bottom:1px dashed rgba(0,224,255,.12)}
+    .basket li:last-child{border-bottom:none}
+    .basket-pill{padding:.15rem .5rem;font-size:.75rem;border-radius:999px;border:1px solid rgba(170,0,255,.6);background:rgba(170,0,255,.15);color:var(--text-secondary)}
+
+    body.reduced-motion *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
   </style>
 </head>
 
@@ -562,80 +206,50 @@
         <div class="logo">🧬</div>
         <div class="brand-text">
           <span>محرك الجينوم المهاري المتكيّف</span>
-          <span style="font-size:0.75rem;color:var(--text-secondary);">
-            Adaptive Skills Engine Prototype
-          </span>
+          <span style="font-size:.75rem;color:var(--text-secondary);">Adaptive Skills Engine — MVP Demo</span>
         </div>
       </div>
 
       <div class="nav-links">
-        <button data-target="landing">الرئيسية</button>
+        <button data-target="home">الرئيسية</button>
         <button data-target="gaps">الفجوة</button>
         <button data-target="dashboard">لوحة الجينوم</button>
-        <button data-target="pathway">المسار التدريبي</button>
         <button data-target="profile">الملف الشخصي</button>
-        <button data-target="assessment">التقييم</button>
+        <button data-target="pathway">المسار التدريبي</button>
+        <button data-target="market">سوق المهارات</button>
+        <button data-target="settings">الإعدادات</button>
 
         <button class="secondary-nav-btn" data-target="login" id="navLoginBtn">تسجيل الدخول</button>
         <button class="danger-nav-btn" id="navLogoutBtn" style="display:none;">تسجيل خروج</button>
 
-        <button class="primary-nav-btn" data-target="gaps">ابدأ العرض للحكام</button>
+        <button class="primary-nav-btn" data-target="home">ابدأ</button>
       </div>
     </nav>
   </header>
 
   <main>
-    <div class="gate-toast" id="gateToast">
-      <strong>تنبيه:</strong> للوصول للمنصة يجب تسجيل الدخول بحساب الـ Demo.
-    </div>
+    <div class="gate-toast" id="gateToast"><strong>تنبيه:</strong> لازم تسجيل الدخول أولاً بحساب الـ Demo.</div>
 
-    <!-- Landing (موجود لكن ممنوع قبل الدخول حسب طلبك) -->
-    <section id="landing">
-      <div class="hero">
-        <div class="hero-text">
-          <h1>
-            <span>استكشف <span class="hero-highlight">جينومك المهاري</span></span>
-            <span>وحدّد مستقبلك المهني بذكاء</span>
-          </h1>
-          <p class="hero-subtitle">
-            منصة تعتمد على الذكاء الاصطناعي لتحليل المهارات، تحديد الفجوات، وبناء مسار تدريبي مخصص.
-          </p>
-          <div class="hero-actions">
-            <button class="btn-primary" data-target="gaps">اذهب لصفحة الفجوة</button>
-            <button class="btn-secondary" data-target="dashboard">لوحة الجينوم</button>
-          </div>
-        </div>
-        <div class="hero-visual">
-          <div class="hero-brain">
-            <div class="hero-brain-icon">🧠</div>
-          </div>
-          <div class="hero-hints">
-            <strong>ملاحظة:</strong> هذا عرض MVP بحساب Demo للتقييم فقط.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- LOGIN (أول صفحة) -->
+    <!-- LOGIN -->
     <section id="login" class="active-section">
       <div class="section-header">
-        <h2>تسجيل الدخول (حساب Demo)</h2>
-        <p>أدخل بيانات الحساب التجريبي للوصول للفجوات + الجينوم + المسار التدريبي.</p>
+        <h2>تسجيل الدخول (Demo Account)</h2>
+        <p>ادخل بيانات الحساب التجريبي لإظهار صفحة الرئيسية ثم اختيار الفجوة/لوحة الجينوم.</p>
       </div>
 
-      <div class="auth-wrap">
+      <div class="card">
         <div class="auth-grid">
           <div class="form-group">
             <label>اسم المستخدم</label>
-            <input id="loginUsername" type="text" placeholder="teacher.demo" />
+            <input id="loginUsername" type="text" placeholder="مثال: teacher.demo" />
           </div>
           <div class="form-group">
             <label>رقم الهوية (Demo)</label>
-            <input id="loginNationalId" type="text" placeholder="1023456789" />
+            <input id="loginNationalId" type="text" placeholder="مثال: 1023456789" />
           </div>
           <div class="form-group" style="grid-column: 1 / -1;">
             <label>كلمة المرور</label>
-            <input id="loginPassword" type="password" placeholder="Demo@2026" />
+            <input id="loginPassword" type="password" placeholder="مثال: Demo@2026" />
           </div>
         </div>
 
@@ -645,34 +259,68 @@
         </div>
 
         <div class="auth-error" id="loginError" style="display:none;"></div>
+        <div class="auth-note" id="demoCredText"></div>
+      </div>
+    </section>
 
-        <div class="auth-note">
-          <strong>بيانات Demo للحكام:</strong><br>
-          Username: <span style="color:var(--neon-cyan);font-weight:700;">teacher.demo</span><br>
-          National ID: <span style="color:var(--neon-cyan);font-weight:700;">1023456789</span><br>
-          Password: <span style="color:var(--neon-cyan);font-weight:700;">Demo@2026</span><br>
-          <span style="opacity:.9;">* جميع البيانات تجريبية للعرض فقط.</span>
+    <!-- HOME (بعد الدخول) -->
+    <section id="home">
+      <div class="section-header">
+        <h2>الصفحة الرئيسية</h2>
+        <p>من هنا تختار تعرض الفجوات أو لوحة الجينوم أو المسار التدريبي.</p>
+      </div>
+
+      <div class="home-hero">
+        <div class="card">
+          <h3 class="home-title" id="homeWelcome">مرحباً 👋</h3>
+          <p class="home-sub" id="homeSub">
+            هذه نسخة MVP Demo مبنية على ملف موظف تجريبي، وتعرض كيف يتم تحليل المهارات وتحديد الفجوات ثم اقتراح مسار تدريبي.
+          </p>
+          <div class="home-actions">
+            <button class="btn-primary" data-target="gaps">عرض الفجوة (Skill Gaps)</button>
+            <button class="btn-secondary" data-target="dashboard">عرض لوحة الجينوم</button>
+            <button class="btn-ghost" data-target="pathway">عرض المسار التدريبي</button>
+          </div>
+          <div class="pill">✅ جاهز للعرض على الحكّام • Demo / Test Data</div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 .6rem;">ملخص سريع</h3>
+          <div class="kpi-row" style="margin-top:.3rem;">
+            <div class="kpi">
+              <div class="v" id="kpiReadiness">0</div>
+              <div class="l">مؤشر الجاهزية</div>
+            </div>
+            <div class="kpi">
+              <div class="v" id="kpiTopGap">—</div>
+              <div class="l">أعلى فجوة</div>
+            </div>
+            <div class="kpi">
+              <div class="v" id="kpiRecs">—</div>
+              <div class="l">عدد توصيات سريعة</div>
+            </div>
+          </div>
+          <div style="margin-top:.9rem;color:var(--text-muted);font-size:.82rem;line-height:1.7;">
+            * هذه الأرقام محسوبة تلقائياً من ملف الموظف التجريبي بعد تسجيل الدخول.
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- GAPS (الوجهة بعد الدخول) -->
+    <!-- GAPS -->
     <section id="gaps">
       <div class="section-header">
         <h2>الفجوات المهارية (Skill Gaps)</h2>
-        <p>عرض فجوات الموظف التجريبي بناءً على مقارنة المستوى الحالي بالمطلوب.</p>
+        <p>عرض فجوات الموظف التجريبي بناءً على مقارنة المستوى الحالي بالمطلوب لوظيفته.</p>
       </div>
 
-      <div class="demo-card">
-        <h3>👤 ملف الموظف (Demo)</h3>
+      <div class="card">
+        <h3 style="margin:0 0 .6rem;">👤 ملف الموظف (Demo) — معلم حاسب ثانوي (حكومي)</h3>
         <div class="demo-meta" id="demoEmployeeMeta"></div>
-        <div class="demo-pill">🧪 Demo/Test Data — للتقييم فقط</div>
-      </div>
+        <div class="pill">🧪 Demo/Test Data — للعرض فقط</div>
 
-      <div class="demo-card">
-        <h3>📌 قائمة الفجوات + توصية سريعة</h3>
-        <div class="demo-table-wrap">
-          <table class="demo-table">
+        <div class="table-wrap">
+          <table>
             <thead>
               <tr>
                 <th>المهارة</th>
@@ -680,17 +328,11 @@
                 <th>المطلوب</th>
                 <th>الفجوة</th>
                 <th>توصية سريعة</th>
-                <th>الحالة</th>
               </tr>
             </thead>
             <tbody id="demoGapsTbody"></tbody>
           </table>
         </div>
-      </div>
-
-      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="btn-small" data-target="dashboard">عرض لوحة الجينوم</button>
-        <button class="btn-ghost" data-target="pathway">عرض المسار التدريبي</button>
       </div>
     </section>
 
@@ -698,261 +340,165 @@
     <section id="dashboard">
       <div class="section-header">
         <h2>لوحة الجينوم المهاري</h2>
-        <p>مبنية تلقائيًا على ملف الموظف وفجواته — غير قابلة للتعديل من المستخدم.</p>
+        <p>الرسم الراداري ثابت على بيانات الموظف التجريبي (Auto‑Computed / Read‑Only).</p>
       </div>
 
       <div class="dashboard-grid">
-        <div class="dashboard-main">
-          <div class="dashboard-main-inner">
-            <canvas id="skillsRadar" width="420" height="320"></canvas>
-            <div class="dashboard-readiness">
-              <div class="readiness-circle">
-                <div class="readiness-value" id="readinessValue">0</div>
-                <div class="readiness-label">جاهزية</div>
-              </div>
-              <div style="max-width:260px;">
-                <div style="font-size:0.9rem;margin-bottom:0.2rem;">
-                  جاهزية الموظف للأدوار الرقمية / التطويرية
-                </div>
-                <div class="dashboard-note">
-                  يتم حسابها تلقائيًا من أبعاد الجينوم الستة (ثابتة حسب الفجوات).
-                </div>
+        <div class="dash-main">
+          <canvas id="skillsRadar" width="420" height="320"></canvas>
+          <div class="readiness">
+            <div class="circle">
+              <div class="v" id="readinessValue">0</div>
+              <div class="t">جاهزية</div>
+            </div>
+            <div style="max-width:280px;color:var(--text-secondary);line-height:1.7;font-size:.9rem;">
+              جاهزية الموظف للأدوار الرقمية/التعليمية الحديثة محسوبة من متوسط أبعاد الجينوم الستة.
+              <div style="color:var(--text-muted);font-size:.8rem;margin-top:.25rem;">
+                * في نسخة الـ MVP: لا يوجد تعديل يدوي.
               </div>
             </div>
           </div>
         </div>
 
-        <div class="dashboard-side">
-          <h3>ملخص الجينوم</h3>
-          <ul class="skills-list" id="skillsSummaryList"></ul>
+        <div class="dash-side">
+          <h3 style="margin:0 0 .4rem;">ملخص الجينوم</h3>
+          <ul class="list" id="skillsSummaryList"></ul>
 
-          <h4>أهم الفجوات (Top Gaps)</h4>
-          <ul class="gaps-list" id="gapsList"></ul>
+          <h4 style="margin:1rem 0 .3rem;">أعلى فجوات</h4>
+          <ul class="list" id="empGapsList"></ul>
 
-          <h4>🎯 توصيات تدريبية سريعة</h4>
-          <ul class="gaps-list" id="empCoursesList"></ul>
+          <h4 style="margin:1rem 0 .3rem;">توصيات تدريبية سريعة</h4>
+          <ul class="list" id="empCoursesList"></ul>
 
-          <div class="dashboard-note">
-            * لوحة الجينوم هنا ثابتة لأنها “مُولّدة” من بيانات الموظف، وليست بناءً على رغبة المستخدم.
-          </div>
-
-          <div style="margin-top:0.9rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
-            <button class="btn-small" data-target="pathway">المسار التدريبي</button>
-            <button class="btn-ghost" data-target="gaps">رجوع للفجوة</button>
+          <div style="margin-top:.9rem;display:flex;flex-wrap:wrap;gap:.5rem;">
+            <button class="btn-small" data-target="pathway">انتقل للمسار التدريبي</button>
+            <button class="btn-ghost" data-target="gaps">عرض الفجوات</button>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile">
+      <div class="section-header">
+        <h2>الملف الشخصي</h2>
+        <p>بعد تسجيل الدخول يتم عرض بيانات الموظف الجاهزة (بدون إدخال يدوي).</p>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 .6rem;">📌 بطاقة الموظف (Demo)</h3>
+        <div class="demo-meta" id="profileEmployeeMeta"></div>
+        <div class="pill">Auto‑filled Profile (Demo)</div>
       </div>
     </section>
 
     <!-- PATHWAY -->
     <section id="pathway">
       <div class="section-header">
-        <h2>مسار التعلّم الشخصي</h2>
-        <p>مسار تدريبي مخصّص حسب فجوات الموظف (Micro‑Learning Path).</p>
+        <h2>مسار تدريبي مخصص</h2>
+        <p>Micro‑Learning Path مبني على فجوات الموظف التجريبي.</p>
       </div>
 
-      <div class="demo-card">
-        <h3>🧭 مسار تدريبي مخصّص (Demo)</h3>
-        <p style="margin:0;color:var(--text-secondary);font-size:0.88rem;line-height:1.7;">
-          تم توليد هذا المسار بناءً على الفجوات الأعلى (AI in Education / Prompting / Data Literacy).
+      <div class="card">
+        <h3 style="margin:0 0 .6rem;">🧭 المسار التدريبي (Demo)</h3>
+        <p style="margin:0;color:var(--text-secondary);font-size:.88rem;line-height:1.7;">
+          تم توليد المسار بناءً على فجوات: <strong style="color:var(--neon-cyan);">AI in Education</strong> +
+          <strong style="color:var(--neon-cyan);">Prompting</strong> + <strong style="color:var(--neon-cyan);">Student Data Analytics</strong>.
         </p>
-        <div class="lp-grid" id="demoLPGrid"></div>
-      </div>
-
-      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="btn-small" data-target="dashboard">لوحة الجينوم</button>
-        <button class="btn-ghost" data-target="profile">الملف الشخصي</button>
-      </div>
-    </section>
-
-    <!-- PROFILE (بعد الدخول: بدون فورم إدخال) -->
-    <section id="profile">
-      <div class="section-header">
-        <h2>الملف الشخصي</h2>
-        <p>معلومات الموظف جاهزة تلقائيًا بعد تسجيل الدخول.</p>
-      </div>
-
-      <div class="demo-card">
-        <h3>👤 معلومات الموظف (Demo)</h3>
-        <div class="demo-meta" id="demoEmployeeMetaProfile"></div>
-        <div class="demo-pill">Auto‑Filled Profile — لا يحتاج إدخال يدوي</div>
-      </div>
-
-      <!-- هذا الفورم يختفي بعد تسجيل الدخول -->
-      <div class="placeholder-box" id="profileFormPlaceholder">
-        هذا النموذج كان للعرض سابقًا، وتم إخفاؤه بعد تسجيل الدخول لأن بيانات الموظف تأتي تلقائيًا من النظام.
-      </div>
-    </section>
-
-    <!-- ASSESSMENT (يبقى موجود لكن يتقفل بعد login) -->
-    <section id="assessment">
-      <div class="section-header">
-        <h2>التقييم المهاري (مقفل بعد تسجيل الدخول)</h2>
-        <p>في الـ MVP: التقييم غير قابل للتعديل لأن الجينوم مرتبط بملف الموظف وفجواته.</p>
-      </div>
-
-      <div class="assessment-demo">
-        <div class="assessment-card">
-          <h3>🔒 مؤشرات الجينوم</h3>
-          <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.8rem;">
-            بعد تسجيل الدخول يتم قفل هذه المؤشرات لأنها “مستخرجة من بيانات الموظف”.
-          </p>
-
-          <div class="skill-slider">
-            <label><span>التفكير التحليلي</span><span class="value" id="val-logic">0</span></label>
-            <input id="skill-logic" type="range" min="0" max="100" value="0">
-          </div>
-          <div class="skill-slider">
-            <label><span>التواصل</span><span class="value" id="val-comm">0</span></label>
-            <input id="skill-comm" type="range" min="0" max="100" value="0">
-          </div>
-          <div class="skill-slider">
-            <label><span>القيادة والتأثير</span><span class="value" id="val-lead">0</span></label>
-            <input id="skill-lead" type="range" min="0" max="100" value="0">
-          </div>
-          <div class="skill-slider">
-            <label><span>المهارات التقنية (Digital)</span><span class="value" id="val-tech">0</span></label>
-            <input id="skill-tech" type="range" min="0" max="100" value="0">
-          </div>
-          <div class="skill-slider">
-            <label><span>التكيّف والمرونة</span><span class="value" id="val-adapt">0</span></label>
-            <input id="skill-adapt" type="range" min="0" max="100" value="0">
-          </div>
-          <div class="skill-slider">
-            <label><span>التعلّم المستمر</span><span class="value" id="val-learn">0</span></label>
-            <input id="skill-learn" type="range" min="0" max="100" value="0">
-          </div>
-
-          <div class="assessment-hint">
-            إذا تبغون نسخة “اختبارية” للحكام تسمح بالتعديل (Sandbox Mode) نقدر نخليها زر خاص — لكن حالياً مقفلة حسب طلبك.
-          </div>
-        </div>
-
-        <div class="assessment-summary">
-          <h3>📊 ملخص</h3>
-          <div id="assessment-summary-list"></div>
-          <div style="margin-top:0.7rem;">
-            <span class="badge-status">✓ الجينوم ثابت</span>
-          </div>
+        <div id="demoLPGrid" style="margin-top:.9rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;"></div>
+        <div style="margin-top:.9rem;color:var(--text-muted);font-size:.82rem;line-height:1.7;">
+          لاحقًا يمكن ربط المحتوى الحقيقي عبر APIs مثل Coursera / edX / LinkedIn Learning.
         </div>
       </div>
     </section>
+
+    <!-- MARKET -->
+    <section id="market">
+      <div class="section-header">
+        <h2>سوق المهارات</h2>
+        <p>اقتراح مهارات/دورات مرتبطة بأضعف أبعاد الجينوم.</p>
+      </div>
+
+      <div class="market-layout">
+        <div class="card">
+          <h3 style="margin:0;">🔮 توصيات حسب الجينوم</h3>
+          <div class="market-cards" id="marketRecommendations"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0;">🧺 سلة مهاراتي</h3>
+          <ul class="basket" id="skillsBasketList"></ul>
+          <div style="margin-top:.7rem;color:var(--text-muted);font-size:.82rem;">Demo Basket — لاحقًا تُحفظ في قاعدة بيانات.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings">
+      <div class="section-header">
+        <h2>الإعدادات والخصوصية</h2>
+        <p>واجهات تجريبية (UI) لعرض تجربة التحكم.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin:0 0 .6rem;">🎛 إعدادات</h3>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.45rem .3rem;border-bottom:1px dashed rgba(0,224,255,.15);">
+            <div>
+              <div style="font-size:.88rem;color:var(--text-secondary);">حركة النيون</div>
+              <div style="font-size:.75rem;color:var(--text-muted);margin-top:.1rem;">تشغيل/إيقاف حركة الخلفية.</div>
+            </div>
+            <label style="position:relative;width:42px;height:22px;">
+              <input type="checkbox" id="toggleNeonAnimation" checked style="opacity:0;width:0;height:0;">
+              <span id="neonSlider" style="position:absolute;inset:0;background:#354055;border-radius:999px;transition:.2s;"></span>
+            </label>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.45rem .3rem;">
+            <div>
+              <div style="font-size:.88rem;color:var(--text-secondary);">تقليل الحركة (Accessibility)</div>
+              <div style="font-size:.75rem;color:var(--text-muted);margin-top:.1rem;">يوقف الحركات والانتقالات.</div>
+            </div>
+            <label style="position:relative;width:42px;height:22px;">
+              <input type="checkbox" id="toggleReducedMotion" style="opacity:0;width:0;height:0;">
+              <span id="rmSlider" style="position:absolute;inset:0;background:#354055;border-radius:999px;transition:.2s;"></span>
+            </label>
+          </div>
+
+          <div style="margin-top:.7rem;color:var(--text-muted);font-size:.82rem;">UI Demo فقط.</div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 .6rem;">🔐 الخصوصية</h3>
+          <ul style="font-size:.85rem;color:var(--text-secondary);line-height:1.9;margin:0;padding-right:1rem;">
+            <li>البيانات هنا تجريبية للعرض فقط.</li>
+            <li>يمكن لاحقًا إضافة تشفير وصلاحيات وصول.</li>
+            <li>دعم حذف البيانات ومدة الاحتفاظ.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
   </main>
 </div>
 
 <script>
-  // ========= Router =========
-  const navButtons = document.querySelectorAll('[data-target]');
-  const sections = document.querySelectorAll('main section');
-  const gateToast = document.getElementById('gateToast');
-
-  function showSection(id) {
-    sections.forEach(sec => sec.classList.toggle('active-section', sec.id === id));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function showGateToast() {
-    gateToast.style.display = 'block';
-    clearTimeout(showGateToast._t);
-    showGateToast._t = setTimeout(() => gateToast.style.display = 'none', 2600);
-  }
-
-  function isAuthed() {
-    return localStorage.getItem('asg_demo_authed') === '1';
-  }
-
-  // حسب طلبك: أي صفحة قبل الدخول ممنوعة (حتى landing)
-  function guardedNavigate(target) {
-    if (target !== 'login' && !isAuthed()) {
-      showGateToast();
-      showSection('login');
-      return;
-    }
-    showSection(target);
-  }
-
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.getAttribute('data-target');
-      if (target) guardedNavigate(target);
-    });
-  });
-
-  // ========= Demo Credentials =========
+  // =========================
+  // 1) DEMO CREDENTIALS (غيّرها هنا)
+  // =========================
   const DEMO_CRED = {
     username: "teacher.demo",
     nationalId: "1023456789",
     password: "Demo@2026"
   };
 
-  const navLoginBtn = document.getElementById('navLoginBtn');
-  const navLogoutBtn = document.getElementById('navLogoutBtn');
-
-  function syncAuthUI() {
-    const authed = isAuthed();
-    navLoginBtn.style.display = authed ? 'none' : 'inline-flex';
-    navLogoutBtn.style.display = authed ? 'inline-flex' : 'none';
-
-    // في profile: نخفي النموذج بعد الدخول
-    const profileFormPlaceholder = document.getElementById('profileFormPlaceholder');
-    if (profileFormPlaceholder) profileFormPlaceholder.style.display = authed ? 'none' : 'block';
-
-    // Lock assessment sliders بعد الدخول
-    lockGenomeUIIfAuthed();
-  }
-
-  function setLoginError(msg) {
-    const loginError = document.getElementById('loginError');
-    loginError.style.display = msg ? 'block' : 'none';
-    loginError.textContent = msg || '';
-  }
-
-  function doLogin(username, nationalId, password) {
-    const ok = (
-      (username || "").trim() === DEMO_CRED.username &&
-      (nationalId || "").trim() === DEMO_CRED.nationalId &&
-      (password || "") === DEMO_CRED.password
-    );
-    if (!ok) return false;
-
-    localStorage.setItem('asg_demo_authed', '1');
-    syncAuthUI();
-
-    // بعد الدخول: نولّد الجينوم من فجوات الموظف ثم نعرض الفجوة مباشرة
-    computeGenomeFromEmployee();
-    renderAllDemo();
-    guardedNavigate('gaps');
-    return true;
-  }
-
-  function doLogout() {
-    localStorage.removeItem('asg_demo_authed');
-    syncAuthUI();
-    // حسب طلبك: يرجع لصفحة login
-    showSection('login');
-  }
-
-  navLogoutBtn.addEventListener('click', doLogout);
-
-  document.getElementById('btnFillDemo').addEventListener('click', () => {
-    document.getElementById('loginUsername').value = DEMO_CRED.username;
-    document.getElementById('loginNationalId').value = DEMO_CRED.nationalId;
-    document.getElementById('loginPassword').value = DEMO_CRED.password;
-    setLoginError('');
-  });
-
-  document.getElementById('btnLogin').addEventListener('click', () => {
-    const u = document.getElementById('loginUsername').value;
-    const n = document.getElementById('loginNationalId').value;
-    const p = document.getElementById('loginPassword').value;
-    const ok = doLogin(u, n, p);
-    if (!ok) setLoginError('بيانات الدخول غير صحيحة. استخدم بيانات Demo الظاهرة.');
-  });
-
-  // ========= Demo Employee Data =========
+  // =========================
+  // 2) DEMO EMPLOYEE DATA
+  // =========================
   const demoEmployee = {
     name: "عبدالله محمد السبيعي",
-    nationalId: "1023456789",
+    nationalId: DEMO_CRED.nationalId,
     role: "معلم حاسب آلي – المرحلة الثانوية",
     sector: "حكومي",
     experience: 15,
@@ -972,61 +518,184 @@
     { skill: "أخلاقيات الذكاء الاصطناعي", current: 1, required: 3 }
   ];
 
-  function calcGapsMatrix() {
-    return demoSkillMatrix
-      .map(s => ({ ...s, gap: Math.max(0, s.required - s.current) }))
-      .sort((a,b) => b.gap - a.gap);
-  }
-
-  // ========= Skills Genome (ثابت بعد login) =========
-  const skillsDefinition = [
-    { id: 'logic', label: 'التفكير التحليلي' },
-    { id: 'comm', label: 'التواصل' },
-    { id: 'lead', label: 'القيادة والتأثير' },
-    { id: 'tech', label: 'المهارات التقنية (Digital)' },
-    { id: 'adapt', label: 'التكيّف والمرونة' },
-    { id: 'learn', label: 'التعلّم المستمر' }
+  const demoLearningPath = [
+    { stage:"المرحلة 1 — أساسيات", items:[
+      { title:"AI for Everyone", platform:"Coursera", url:"https://www.coursera.org/" },
+      { title:"Introduction to Generative AI", platform:"edX", url:"https://www.edx.org/" }
+    ]},
+    { stage:"المرحلة 2 — تطبيق في التعليم", items:[
+      { title:"Teaching with AI Tools", platform:"LinkedIn Learning", url:"https://www.linkedin.com/learning/" },
+      { title:"Data‑Driven Teaching Strategies", platform:"Coursera", url:"https://www.coursera.org/" }
+    ]},
+    { stage:"المرحلة 3 — احتراف عملي", items:[
+      { title:"Prompt Engineering Basics", platform:"Udemy", url:"https://www.udemy.com/" },
+      { title:"Responsible AI & Ethics", platform:"edX", url:"https://www.edx.org/" }
+    ]}
   ];
 
-  // سيتم تعبئته من employee
-  const skillGenome = { logic: 0, comm: 0, lead: 0, tech: 0, adapt: 0, learn: 0 };
+  const skillsDefinition = [
+    { id:'logic', label:'التفكير التحليلي' },
+    { id:'comm', label:'التواصل' },
+    { id:'lead', label:'القيادة والتأثير' },
+    { id:'tech', label:'المهارات التقنية (Digital)' },
+    { id:'adapt', label:'التكيّف والمرونة' },
+    { id:'learn', label:'التعلّم المستمر' }
+  ];
 
-  // نحول فجوات الموظف إلى Radar قيم 0-100 (Demo logic واضح)
-  function computeGenomeFromEmployee() {
-    const gaps = calcGapsMatrix();
-    const topGaps = gaps.filter(g => g.gap > 0);
+  const dimensionWeights = {
+    tech: ["الذكاء الاصطناعي في التعليم","هندسة الأوامر (Prompting)","البرمجة الأساسية","أمن المعلومات (أساسي)","إدارة الصف الرقمي"],
+    logic:["تحليل بيانات الطلاب","أمن المعلومات (أساسي)"],
+    comm:["تصميم محتوى تفاعلي","إدارة الصف الرقمي"],
+    lead:["إدارة الصف الرقمي"],
+    adapt:["الذكاء الاصطناعي في التعليم","تصميم محتوى تفاعلي"],
+    learn:["هندسة الأوامر (Prompting)","أخلاقيات الذكاء الاصطناعي","الذكاء الاصطناعي في التعليم"]
+  };
 
-    // مؤشرات أساسية (Demo): كل ما زادت فجوات التقنية والـ AI يقل tech
-    const gapAI = topGaps.find(x => x.skill.includes("الذكاء الاصطناعي"))?.gap || 0;
-    const gapPrompt = topGaps.find(x => x.skill.includes("Prompt"))?.gap || 0;
-    const gapData = topGaps.find(x => x.skill.includes("تحليل بيانات"))?.gap || 0;
-    const gapCyber = topGaps.find(x => x.skill.includes("أمن"))?.gap || 0;
-    const gapProg = topGaps.find(x => x.skill.includes("البرمجة"))?.gap || 0;
-
-    const techPenalty = (gapAI*18 + gapPrompt*16 + gapData*14 + gapCyber*10 + gapProg*8);
-    const logicPenalty = (gapData*18 + gapProg*8);
-
-    // قيم افتراضية مع خصم حسب الفجوات
-    skillGenome.tech = clamp(85 - techPenalty, 20, 90);
-    skillGenome.logic = clamp(78 - logicPenalty, 25, 90);
-
-    // أبعاد أقل تأثرًا في هذه الحالة (Demo): ثابتة تقريباً
-    skillGenome.comm  = 72;
-    skillGenome.lead  = 62;
-    skillGenome.adapt = 68;
-    skillGenome.learn = clamp(80 - (gapAI*10 + gapPrompt*8), 30, 90);
+  function calcGapsMatrix(){
+    return demoSkillMatrix.map(s=>({...s,gap:Math.max(0,s.required-s.current)})).sort((a,b)=>b.gap-a.gap);
   }
 
-  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
-
-  function lockGenomeUIIfAuthed() {
-    const lock = isAuthed();
-    document.querySelectorAll('#assessment input[type="range"]').forEach(r => r.disabled = lock);
+  function computeGenomeFromEmployee(){
+    const bySkill=new Map();
+    demoSkillMatrix.forEach(s=>{
+      const ratio=s.required?(s.current/s.required):1;
+      bySkill.set(s.skill,Math.max(0,Math.min(1,ratio)));
+    });
+    const genome={};
+    Object.keys(dimensionWeights).forEach(dim=>{
+      const skills=dimensionWeights[dim];
+      const vals=skills.map(sk=>bySkill.get(sk) ?? 0.7);
+      const avg=vals.reduce((a,b)=>a+b,0)/Math.max(1,vals.length);
+      genome[dim]=Math.round(avg*100);
+    });
+    skillsDefinition.forEach(d=>{ if(genome[d.id]===undefined) genome[d.id]=65; });
+    return genome;
   }
 
-  // ========= Render Employee Info =========
-  function renderEmployeeMeta() {
-    const metaHTML = `
+  const skillGenome = computeGenomeFromEmployee();
+  const selectedSkills = new Set();
+
+  // =========================
+  // ROUTER + GATE
+  // =========================
+  const sections = document.querySelectorAll('main section');
+  const navButtons = document.querySelectorAll('[data-target]');
+  const gateToast = document.getElementById('gateToast');
+
+  function showSection(id){
+    sections.forEach(sec=>sec.classList.toggle('active-section', sec.id===id));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function showGateToast(){
+    gateToast.style.display='block';
+    clearTimeout(showGateToast._t);
+    showGateToast._t=setTimeout(()=>gateToast.style.display='none',2200);
+  }
+  function isAuthed(){ return localStorage.getItem('asg_demo_authed')==='1'; }
+
+  function guardedNavigate(target){
+    if(target!=='login' && !isAuthed()){
+      showGateToast(); showSection('login'); return;
+    }
+    showSection(target);
+    // refresh on key pages
+    if(isAuthed()){
+      if(target==='home') renderHomeKpis();
+      if(target==='gaps'){ renderEmployeeMeta(); renderGapsPage(); }
+      if(target==='dashboard'){ renderDashboard(); }
+      if(target==='profile'){ renderEmployeeMeta(); }
+      if(target==='pathway'){ renderDemoLearningPath(); }
+      if(target==='market'){ updateMarketFromGenome(); }
+    }
+  }
+  navButtons.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const target=btn.getAttribute('data-target');
+      if(target) guardedNavigate(target);
+    });
+  });
+
+  // =========================
+  // AUTH
+  // =========================
+  const navLoginBtn=document.getElementById('navLoginBtn');
+  const navLogoutBtn=document.getElementById('navLogoutBtn');
+  const loginError=document.getElementById('loginError');
+
+  function setLoginError(msg){
+    loginError.style.display = msg ? 'block' : 'none';
+    loginError.textContent = msg || '';
+  }
+
+  function syncAuthUI(){
+    const authed=isAuthed();
+    navLoginBtn.style.display = authed ? 'none' : 'inline-flex';
+    navLogoutBtn.style.display = authed ? 'inline-flex' : 'none';
+  }
+
+  function setDemoCredText(){
+    document.getElementById('demoCredText').innerHTML = `
+      <strong>بيانات Demo للحكام:</strong><br>
+      Username: <span style="color:var(--neon-cyan);font-weight:800;">${DEMO_CRED.username}</span><br>
+      National ID (Demo): <span style="color:var(--neon-cyan);font-weight:800;">${DEMO_CRED.nationalId}</span><br>
+      Password: <span style="color:var(--neon-cyan);font-weight:800;">${DEMO_CRED.password}</span><br>
+      <span style="opacity:.9;">* جميع البيانات هنا تجريبية للعرض فقط.</span>
+    `;
+  }
+
+  function doLogin(username,nationalId,password){
+    const ok =
+      (username||"").trim()===DEMO_CRED.username &&
+      (nationalId||"").trim()===DEMO_CRED.nationalId &&
+      (password||"")===DEMO_CRED.password;
+
+    if(!ok) return false;
+
+    localStorage.setItem('asg_demo_authed','1');
+    syncAuthUI();
+
+    // build pages once
+    renderEmployeeMeta();
+    renderGapsPage();
+    renderDashboard();
+    renderDemoLearningPath();
+    updateMarketFromGenome();
+    renderHomeWelcome();
+    renderHomeKpis();
+    setupSettingsToggles();
+
+    // بعد الدخول: يروح للصفحة الرئيسية
+    showSection('home');
+    return true;
+  }
+
+  function doLogout(){
+    localStorage.removeItem('asg_demo_authed');
+    syncAuthUI();
+    showSection('login');
+  }
+  navLogoutBtn.addEventListener('click', doLogout);
+
+  document.getElementById('btnFillDemo').addEventListener('click',()=>{
+    document.getElementById('loginUsername').value=DEMO_CRED.username;
+    document.getElementById('loginNationalId').value=DEMO_CRED.nationalId;
+    document.getElementById('loginPassword').value=DEMO_CRED.password;
+    setLoginError('');
+  });
+
+  document.getElementById('btnLogin').addEventListener('click',()=>{
+    const u=document.getElementById('loginUsername').value;
+    const n=document.getElementById('loginNationalId').value;
+    const p=document.getElementById('loginPassword').value;
+    const ok=doLogin(u,n,p);
+    if(!ok) setLoginError('بيانات الدخول غير صحيحة. استخدم بيانات Demo المعروضة.');
+  });
+
+  // =========================
+  // RENDER: EMPLOYEE META + GAPS
+  // =========================
+  function renderEmployeeMeta(){
+    const html=`
       <div>الاسم: <strong>${demoEmployee.name} (Demo)</strong></div>
       <div>رقم الهوية: <strong>${demoEmployee.nationalId} (Demo)</strong></div>
       <div>الوظيفة: <strong>${demoEmployee.role}</strong></div>
@@ -1036,261 +705,281 @@
       <div>آخر تدريب مهني: <strong>${demoEmployee.lastTrainingYear}</strong></div>
       <div>ملاحظة: <strong>${demoEmployee.note}</strong></div>
     `;
-    const meta1 = document.getElementById('demoEmployeeMeta');
-    const meta2 = document.getElementById('demoEmployeeMetaProfile');
-    if (meta1) meta1.innerHTML = metaHTML;
-    if (meta2) meta2.innerHTML = metaHTML;
+    const m1=document.getElementById('demoEmployeeMeta');
+    const m2=document.getElementById('profileEmployeeMeta');
+    if(m1) m1.innerHTML=html;
+    if(m2) m2.innerHTML=html;
   }
 
-  function renderGapsPage() {
-    const tbody = document.getElementById('demoGapsTbody');
-    if (!tbody) return;
+  function renderGapsPage(){
+    const tbody=document.getElementById('demoGapsTbody');
+    if(!tbody) return;
 
-    const recMap = {
-      "الذكاء الاصطناعي في التعليم": "دورات AI in Education + تطبيقات صفية",
-      "هندسة الأوامر (Prompting)": "Prompt Engineering Basics + قوالب تعليمية",
-      "تحليل بيانات الطلاب": "Data Literacy + لوحات متابعة الأداء",
-      "أخلاقيات الذكاء الاصطناعي": "Responsible AI + سياسات استخدام",
-      "إدارة الصف الرقمي": "LMS + أدوات تفاعل",
-      "تصميم محتوى تفاعلي": "Interactive Content Design",
-      "أمن المعلومات (أساسي)": "Cyber Hygiene for Educators",
-      "البرمجة الأساسية": "Python/CS Basics للمعلّمين"
+    const recMap={
+      "الذكاء الاصطناعي في التعليم":"AI in Education + Classroom Use‑Cases",
+      "هندسة الأوامر (Prompting)":"Prompt Engineering Basics",
+      "تحليل بيانات الطلاب":"Student Data Analytics (Dashboards)",
+      "أخلاقيات الذكاء الاصطناعي":"Responsible AI & Ethics",
+      "إدارة الصف الرقمي":"LMS + Digital Classroom Management",
+      "تصميم محتوى تفاعلي":"Interactive Content Design"
     };
 
-    const gaps = calcGapsMatrix();
-    tbody.innerHTML = gaps.map(g => {
-      const status = g.gap === 0 ? `<span class="demo-badge-ok">متوافق</span>` : `<span class="demo-badge-gap">فجوة</span>`;
-      return `
-        <tr>
-          <td>${g.skill}</td>
-          <td>${g.current}</td>
-          <td>${g.required}</td>
-          <td><strong style="color:${g.gap ? 'var(--neon-pink)' : 'var(--neon-cyan)'}">${g.gap}</strong></td>
-          <td>${recMap[g.skill] || "دورة مخصّصة لسد الفجوة"}</td>
-          <td>${status}</td>
-        </tr>
-      `;
-    }).join('');
+    const gaps=calcGapsMatrix().filter(x=>x.gap>0);
+    tbody.innerHTML=gaps.map(g=>`
+      <tr>
+        <td>${g.skill}</td>
+        <td>${g.current}</td>
+        <td>${g.required}</td>
+        <td><strong style="color:var(--neon-pink)">${g.gap}</strong></td>
+        <td>${recMap[g.skill] || "Targeted Training"}</td>
+      </tr>
+    `).join('');
   }
 
-  // ========= Dashboard Radar =========
-  let radarCtx = null;
-  function drawRadarChart() {
-    const canvas = document.getElementById('skillsRadar');
-    if (!canvas) return;
-    if (!radarCtx) radarCtx = canvas.getContext('2d');
-    const ctx = radarCtx;
+  // =========================
+  // HOME: welcome + kpis
+  // =========================
+  function renderHomeWelcome(){
+    const el=document.getElementById('homeWelcome');
+    const el2=document.getElementById('homeSub');
+    if(!el || !el2) return;
+    el.textContent = `مرحباً 👋 ${demoEmployee.name} (Demo)`;
+    el2.textContent = `تم تسجيل دخولك كـ ${demoEmployee.role} — نستعرض الآن فجواتك المهارية ونقترح مسار تدريبي مخصص بناءً على ملفك.`;
+  }
 
-    const w = canvas.width, h = canvas.height;
-    ctx.clearRect(0, 0, w, h);
+  function renderHomeKpis(){
+    const gaps=calcGapsMatrix().filter(x=>x.gap>0);
+    const top=gaps[0]?.skill || "—";
+    const recs = demoLearningPath.flatMap(s=>s.items).length;
 
-    const centerX = w / 2, centerY = h / 2;
-    const radius = Math.min(w, h) * 0.32;
-    const levels = 4;
-    const angleStep = (Math.PI * 2) / skillsDefinition.length;
+    const avg = Math.round(skillsDefinition.reduce((sum,s)=>sum+(skillGenome[s.id]||0),0)/skillsDefinition.length);
+
+    document.getElementById('kpiReadiness').textContent = avg;
+    document.getElementById('kpiTopGap').textContent = top;
+    document.getElementById('kpiRecs').textContent = recs;
+  }
+
+  // =========================
+  // DASHBOARD: radar + side lists
+  // =========================
+  let radarCtx=null;
+
+  function drawRadarChart(){
+    const canvas=document.getElementById('skillsRadar');
+    if(!canvas) return;
+    if(!radarCtx) radarCtx=canvas.getContext('2d');
+    const ctx=radarCtx;
+    const w=canvas.width,h=canvas.height;
+    ctx.clearRect(0,0,w,h);
+
+    const cx=w/2,cy=h/2;
+    const radius=Math.min(w,h)*0.32;
+    const levels=4;
+    const step=(Math.PI*2)/skillsDefinition.length;
 
     ctx.save();
-    ctx.translate(centerX, centerY);
+    ctx.translate(cx,cy);
 
-    for (let lvl = 1; lvl <= levels; lvl++) {
-      const r = (radius / levels) * lvl;
+    for(let lvl=1;lvl<=levels;lvl++){
+      const r=(radius/levels)*lvl;
       ctx.beginPath();
-      for (let i = 0; i < skillsDefinition.length; i++) {
-        const angle = angleStep * i - Math.PI / 2;
-        const x = Math.cos(angle) * r;
-        const y = Math.sin(angle) * r;
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      for(let i=0;i<skillsDefinition.length;i++){
+        const a=step*i - Math.PI/2;
+        const x=Math.cos(a)*r,y=Math.sin(a)*r;
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
       }
       ctx.closePath();
-      ctx.strokeStyle = 'rgba(0, 224, 255, 0.18)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      ctx.strokeStyle='rgba(0,224,255,0.18)';
+      ctx.lineWidth=1;ctx.stroke();
     }
 
-    for (let i = 0; i < skillsDefinition.length; i++) {
-      const angle = angleStep * i - Math.PI / 2;
+    for(let i=0;i<skillsDefinition.length;i++){
+      const a=step*i - Math.PI/2;
       ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
-      ctx.strokeStyle = 'rgba(0, 224, 255, 0.25)';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
+      ctx.moveTo(0,0);
+      ctx.lineTo(Math.cos(a)*radius, Math.sin(a)*radius);
+      ctx.strokeStyle='rgba(0,224,255,0.25)';
+      ctx.lineWidth=.8;ctx.stroke();
     }
 
-    ctx.font = '11px system-ui';
-    ctx.fillStyle = '#B4C7E7';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    skillsDefinition.forEach((skill, i) => {
-      const angle = angleStep * i - Math.PI / 2;
-      const x = Math.cos(angle) * (radius + 18);
-      const y = Math.sin(angle) * (radius + 18);
-      ctx.fillText(skill.label, x, y);
+    ctx.font='11px system-ui';
+    ctx.fillStyle='#B4C7E7';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    skillsDefinition.forEach((s,i)=>{
+      const a=step*i - Math.PI/2;
+      ctx.fillText(s.label, Math.cos(a)*(radius+18), Math.sin(a)*(radius+18));
     });
 
     ctx.beginPath();
-    skillsDefinition.forEach((skill, i) => {
-      const val = clamp(skillGenome[skill.id] || 0, 0, 100);
-      const r = (val / 100) * radius;
-      const angle = angleStep * i - Math.PI / 2;
-      const x = Math.cos(angle) * r;
-      const y = Math.sin(angle) * r;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    skillsDefinition.forEach((s,i)=>{
+      const val=Math.max(0,Math.min(100,skillGenome[s.id]||0));
+      const r=(val/100)*radius;
+      const a=step*i - Math.PI/2;
+      const x=Math.cos(a)*r,y=Math.sin(a)*r;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     });
     ctx.closePath();
-    ctx.fillStyle = 'rgba(0, 255, 240, 0.23)';
-    ctx.strokeStyle = 'rgba(0, 255, 240, 0.8)';
-    ctx.lineWidth = 2;
-    ctx.shadowColor = 'rgba(0, 255, 240, 0.8)';
-    ctx.shadowBlur = 12;
-    ctx.fill();
-    ctx.stroke();
+    ctx.fillStyle='rgba(0,255,240,0.23)';
+    ctx.strokeStyle='rgba(0,255,240,0.8)';
+    ctx.lineWidth=2;
+    ctx.shadowColor='rgba(0,255,240,0.8)';
+    ctx.shadowBlur=12;
+    ctx.fill(); ctx.stroke();
 
     ctx.restore();
   }
 
-  function updateDashboardFromGenome() {
-    const total = skillsDefinition.reduce((sum, s) => sum + (skillGenome[s.id] || 0), 0);
-    const avg = Math.round(total / skillsDefinition.length);
-    const readinessValue = document.getElementById('readinessValue');
-    if (readinessValue) readinessValue.textContent = avg;
+  function renderDashboard(){
+    const avg = Math.round(skillsDefinition.reduce((sum,s)=>sum+(skillGenome[s.id]||0),0)/skillsDefinition.length);
+    document.getElementById('readinessValue').textContent=avg;
 
-    const summaryList = document.getElementById('skillsSummaryList');
-    if (summaryList) {
-      summaryList.innerHTML = '';
-      skillsDefinition.forEach(skill => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span class="skill-badge-label">
-            <span class="skill-dot"></span>
-            <span>${skill.label}</span>
-          </span>
-          <span class="skill-score">${skillGenome[skill.id]}/100</span>
-        `;
-        summaryList.appendChild(li);
-      });
-    }
+    const sList=document.getElementById('skillsSummaryList');
+    sList.innerHTML='';
+    skillsDefinition.forEach(s=>{
+      const li=document.createElement('li');
+      li.innerHTML=`<span>${s.label}</span><span style="color:var(--neon-cyan);font-weight:800;">${skillGenome[s.id]}/100</span>`;
+      sList.appendChild(li);
+    });
 
-    // نعرض 3 أضعف أبعاد كـ "Targets"
-    const sortedDims = [...skillsDefinition].sort((a,b) => (skillGenome[a.id]||0) - (skillGenome[b.id]||0));
-    const gapsList = document.getElementById('gapsList');
-    if (gapsList) {
-      gapsList.innerHTML = '';
-      sortedDims.slice(0,3).forEach(dim => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <span>${dim.label}</span>
-          <span class="gap-tag">هدف: رفعها إلى ${Math.min(100, (skillGenome[dim.id]||0) + 20)}+</span>
-        `;
-        gapsList.appendChild(li);
-      });
-    }
+    const gapsEl=document.getElementById('empGapsList');
+    const coursesEl=document.getElementById('empCoursesList');
+
+    const topGaps=calcGapsMatrix().filter(x=>x.gap>0).slice(0,4);
+    gapsEl.innerHTML=topGaps.map(g=>`<li><span>${g.skill}</span><span class="tag">فجوة: ${g.gap}</span></li>`).join('');
+
+    const flatCourses=demoLearningPath.flatMap(s=>s.items).slice(0,4);
+    coursesEl.innerHTML=flatCourses.map(c=>`<li><span>${c.title}</span><span class="tag">${c.platform}</span></li>`).join('');
 
     drawRadarChart();
   }
 
-  // ========= Courses + Pathway =========
-  const demoLearningPath = [
-    {
-      stage: "المرحلة 1 — أساسيات",
-      items: [
-        { title: "AI for Everyone", platform: "Coursera", url: "https://www.coursera.org/" },
-        { title: "Introduction to Generative AI", platform: "edX", url: "https://www.edx.org/" }
-      ]
-    },
-    {
-      stage: "المرحلة 2 — تطبيق في التعليم",
-      items: [
-        { title: "Teaching with AI Tools", platform: "LinkedIn Learning", url: "https://www.linkedin.com/learning/" },
-        { title: "Data‑Driven Teaching Strategies", platform: "Coursera", url: "https://www.coursera.org/" }
-      ]
-    },
-    {
-      stage: "المرحلة 3 — احتراف عملي",
-      items: [
-        { title: "Prompt Engineering Basics", platform: "Udemy", url: "https://www.udemy.com/" },
-        { title: "Responsible AI & Ethics", platform: "edX", url: "https://www.edx.org/" }
-      ]
-    }
-  ];
-
-  function renderCoursesOnDashboard() {
-    const coursesEl = document.getElementById('empCoursesList');
-    if (!coursesEl) return;
-    const flat = demoLearningPath.flatMap(s => s.items).slice(0, 4);
-    coursesEl.innerHTML = flat.map(c => `
-      <li>
-        <span>${c.title}</span>
-        <span class="gap-tag">${c.platform}</span>
-      </li>
-    `).join('');
-  }
-
-  function renderLearningPath() {
-    const grid = document.getElementById('demoLPGrid');
-    if (!grid) return;
-    grid.innerHTML = demoLearningPath.map(stage => `
-      <div class="lp-stage">
-        <div class="lp-stage-title">${stage.stage}</div>
-        ${stage.items.map(it => `
-          <div class="lp-item">
+  // =========================
+  // PATHWAY
+  // =========================
+  function renderDemoLearningPath(){
+    const grid=document.getElementById('demoLPGrid');
+    if(!grid) return;
+    grid.innerHTML = demoLearningPath.map(stage=>`
+      <div class="market-card" style="background:rgba(10,16,28,.75);">
+        <div style="font-weight:900;color:#DCE8FF;margin-bottom:.35rem;">${stage.stage}</div>
+        ${stage.items.map(it=>`
+          <div style="border-top:1px dashed rgba(0,224,255,.14);padding-top:.55rem;margin-top:.55rem;display:flex;justify-content:space-between;gap:.6rem;">
             <div>
-              <div style="font-weight:700;color:#DCE8FF;">${it.title}</div>
-              <div style="font-size:0.76rem;color:var(--text-muted);">${it.platform}</div>
+              <div style="font-weight:800;color:#DCE8FF;">${it.title}</div>
+              <div style="font-size:.76rem;color:var(--text-muted);">${it.platform}</div>
             </div>
-            <a href="${it.url}" target="_blank" rel="noreferrer">Open</a>
+            <a href="${it.url}" target="_blank" rel="noreferrer" style="color:var(--neon-blue);font-weight:900;">Open</a>
           </div>
         `).join('')}
       </div>
     `).join('');
   }
 
-  // ========= Assessment UI sync (locked) =========
-  function syncAssessmentUI() {
-    skillsDefinition.forEach(skill => {
-      const input = document.getElementById('skill-' + skill.id);
-      const labelVal = document.getElementById('val-' + skill.id);
-      if (input && labelVal) {
-        input.value = skillGenome[skill.id];
-        labelVal.textContent = skillGenome[skill.id];
-      }
-    });
-    renderAssessmentSummary();
-  }
-  function renderAssessmentSummary() {
-    const container = document.getElementById('assessment-summary-list');
-    if (!container) return;
-    container.innerHTML = '';
-    skillsDefinition.forEach(skill => {
-      const score = skillGenome[skill.id];
-      const div = document.createElement('div');
-      div.className = 'summary-pill';
-      div.innerHTML = `<span>${skill.label}</span><span class="score">${score}/100</span>`;
-      container.appendChild(div);
+  // =========================
+  // MARKET
+  // =========================
+  const skillRecommendations={
+    logic:[{title:'التفكير النقدي وصنع القرار',meta:'6 ساعات',tags:['Critical Thinking','Problem Solving']}],
+    comm:[{title:'التواصل الفعال في التعليم الرقمي',meta:'5 ساعات',tags:['Communication','Remote']}],
+    lead:[{title:'إدارة الصف والتأثير',meta:'4 ساعات',tags:['Leadership','Coaching']}],
+    tech:[
+      {title:'Generative AI for Education',meta:'12 ساعة',tags:['GenAI','AI in Education']},
+      {title:'Prompt Engineering Basics',meta:'7 ساعات',tags:['Prompting','LLMs']}
+    ],
+    adapt:[{title:'العمل في بيئات سريعة التغير',meta:'4 ساعات',tags:['Adaptability']}],
+    learn:[{title:'Learning How to Learn',meta:'3 ساعات',tags:['Self‑Learning']}]
+  };
+
+  function updateMarketFromGenome(){
+    const container=document.getElementById('marketRecommendations');
+    if(!container) return;
+    container.innerHTML='';
+
+    const sorted=[...skillsDefinition].sort((a,b)=>(skillGenome[a.id]||0)-(skillGenome[b.id]||0));
+    const weakest=sorted.slice(0,3);
+
+    weakest.forEach(skill=>{
+      (skillRecommendations[skill.id]||[]).forEach(rec=>{
+        const card=document.createElement('div');
+        card.className='market-card';
+        card.innerHTML=`
+          <div class="market-card-title">${rec.title}</div>
+          <div class="market-card-meta">${skill.label} • ${rec.meta}</div>
+          <div class="market-tag-row">${rec.tags.map(t=>`<span class="market-tag">${t}</span>`).join('')}</div>
+          <button class="btn-small" style="font-size:.75rem;padding:.35rem .9rem;margin-top:.1rem;">أضف إلى مساري</button>
+        `;
+        card.querySelector('button').addEventListener('click',()=>addToSkillsBasket(rec.title,skill.label));
+        container.appendChild(card);
+      });
     });
   }
 
-  function renderAllDemo() {
-    renderEmployeeMeta();
-    renderGapsPage();
-    updateDashboardFromGenome();
-    renderCoursesOnDashboard();
-    renderLearningPath();
-    syncAssessmentUI();
+  function addToSkillsBasket(skillTitle,dimensionLabel){
+    const key=`${skillTitle}__${dimensionLabel}`;
+    if(selectedSkills.has(key)) return;
+    selectedSkills.add(key);
+
+    const list=document.getElementById('skillsBasketList');
+    const li=document.createElement('li');
+    li.innerHTML=`<span>${skillTitle}<span style="font-size:.75rem;color:var(--text-muted);"> • ${dimensionLabel}</span></span><span class="basket-pill">ضمن المسار</span>`;
+    list.appendChild(li);
   }
 
-  // ========= Init =========
-  window.addEventListener('DOMContentLoaded', () => {
+  // =========================
+  // SETTINGS TOGGLES (simple)
+  // =========================
+  function paintSwitch(el,on){
+    el.style.background = on ? 'linear-gradient(135deg,var(--neon-blue),var(--neon-purple))' : '#354055';
+    el.style.boxShadow = on ? '0 0 16px rgba(0,224,255,.6)' : 'none';
+  }
+  function setupSettingsToggles(){
+    const neonToggle=document.getElementById('toggleNeonAnimation');
+    const rmToggle=document.getElementById('toggleReducedMotion');
+    const neonSlider=document.getElementById('neonSlider');
+    const rmSlider=document.getElementById('rmSlider');
+
+    paintSwitch(neonSlider,true);
+    paintSwitch(rmSlider,false);
+
+    neonToggle.addEventListener('change',()=>{
+      paintSwitch(neonSlider,neonToggle.checked);
+      document.querySelectorAll('.neon-orb').forEach(orb=>{
+        if(neonToggle.checked) orb.classList.remove('neon-paused');
+        else orb.classList.add('neon-paused');
+      });
+    });
+
+    rmToggle.addEventListener('change',()=>{
+      paintSwitch(rmSlider,rmToggle.checked);
+      if(rmToggle.checked) document.body.classList.add('reduced-motion');
+      else document.body.classList.remove('reduced-motion');
+    });
+  }
+
+  // =========================
+  // INIT
+  // =========================
+  window.addEventListener('DOMContentLoaded',()=>{
+    setDemoCredText();
     syncAuthUI();
 
-    if (!isAuthed()) {
-      showSection('login'); // مطلوب: أول شيء login
+    if(!isAuthed()){
+      showSection('login');
       return;
     }
 
-    computeGenomeFromEmployee();
-    renderAllDemo();
-    guardedNavigate('gaps'); // لو كان مسجل من قبل، يدخله مباشرة على الفجوة
+    // authed
+    renderEmployeeMeta();
+    renderGapsPage();
+    renderDashboard();
+    renderDemoLearningPath();
+    updateMarketFromGenome();
+    renderHomeWelcome();
+    renderHomeKpis();
+    setupSettingsToggles();
+
+    showSection('home');
   });
 </script>
 </body>
